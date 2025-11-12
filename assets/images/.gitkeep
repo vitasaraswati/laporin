@@ -1,0 +1,12 @@
+# Assets Images
+
+Folder ini untuk menyimpan gambar-gambar yang digunakan dalam aplikasi.
+
+## Recommended Images:
+
+1. **logo.png** - Logo aplikasi LaporJTI
+2. **onboarding_1.png** - Ilustrasi untuk onboarding pertama
+3. **onboarding_2.png** - Ilustrasi untuk onboarding kedua
+4. **onboarding_3.png** - Ilustrasi untuk onboarding ketiga
+
+Ganti emoji placeholder di `lib/models/onboarding_model.dart` dengan path gambar yang sesuai.
