@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:laporin/constants/colors.dart';
 import 'package:laporin/providers/auth_provider.dart';
 import 'package:laporin/providers/onboarding_provider.dart';
+import 'package:laporin/providers/report_provider.dart';
 import 'package:laporin/routes/app_router.dart';
 
 void main() {
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {

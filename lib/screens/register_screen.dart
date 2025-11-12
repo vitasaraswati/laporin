@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:laporin/constants/colors.dart';
 import 'package:laporin/constants/text_styles.dart';
 import 'package:laporin/providers/auth_provider.dart';
+import 'package:laporin/models/enums.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,9 +19,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _nimController = TextEditingController();
+  final _nipController = TextEditingController();
+  final _phoneController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
+  UserRole _selectedRole = UserRole.mahasiswa;
 
   @override
   void dispose() {
@@ -28,6 +33,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _nimController.dispose();
+    _nipController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -49,6 +57,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _nameController.text.trim(),
         _emailController.text.trim(),
         _passwordController.text,
+        _selectedRole,
+        nim: _selectedRole == UserRole.mahasiswa ? _nimController.text.trim() : null,
+        nip: _selectedRole == UserRole.dosen ? _nipController.text.trim() : null,
+        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
       );
 
       if (mounted) {
