@@ -47,6 +47,40 @@ dependencies:
   # UI Components
   smooth_page_indicator: ^1.2.0+3
   google_fonts: ^6.2.1
+  
+  # Image & Media
+  image_picker: ^1.1.2
+  video_player: ^2.9.2
+  
+  # Location & Maps
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
+  url_launcher: ^6.2.5
+  
+  # Utilities
+  intl: ^0.20.1
+  uuid: ^4.5.1
+  path: ^1.9.0
+  
+  # Animations
+  animations: ^2.0.11
+  flutter_animate: ^4.5.0
+  
+  # Icons
+  font_awesome_flutter: ^10.8.0
+  
+  # Badges & Chips
+  badges: ^3.1.2
+  
+  # Persistent Bottom Navigation Bar
+  persistent_bottom_nav_bar: ^6.2.1
+
+  # Firebase
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.3
+  cloud_firestore: ^5.5.0
+  firebase_storage: ^12.3.6
+  firebase_messaging: ^15.1.5
 
 dev_dependencies:
   flutter_test:

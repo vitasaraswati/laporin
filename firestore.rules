@@ -1,0 +1,80 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper function to check user role from users collection
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    // Helper function to check if user is admin (from users collection)
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+
+    // ========== USERS COLLECTION ==========
+    match /users/{userId} {
+      // Allow users to read their own profile
+      // Allow authenticated users to read all users (for admin dashboard)
+      allow read: if isAuthenticated() || true; // Allow read for development
+
+      // Allow users to update their own profile
+      allow update: if isOwner(userId) || true; // Allow update for development
+
+      // Allow creation (for registration)
+      allow create: if true;
+
+      // Allow delete for admins only
+      allow delete: if true; // Allow delete for development
+    }
+
+    // ========== ADMINS COLLECTION ==========
+    match /admins/{adminId} {
+      // Allow read for admin login verification
+      allow read: if true;
+
+      // Only admins can create/update/delete admins
+      allow write: if true; // Allow write for development
+    }
+
+    // ========== REPORTS COLLECTION ==========
+    match /reports/{reportId} {
+      // Allow authenticated users to read reports
+      // Allow read for development (admin without Firebase Auth)
+      allow read: if isAuthenticated() || true;
+
+      // Allow authenticated users to create reports
+      allow create: if isAuthenticated() || true;
+
+      // Allow report owner or admin to update
+      allow update: if true; // Allow update for development
+
+      // Allow report owner or admin to delete
+      allow delete: if true; // Allow delete for development
+    }
+
+    // ========== NOTIFICATIONS COLLECTION (if needed) ==========
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() || true;
+      allow write: if true;
+    }
+
+    // ========== CATCH-ALL RULE ==========
+    // This allows any authenticated user to read/write any document
+    // REMOVE THIS IN PRODUCTION!
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

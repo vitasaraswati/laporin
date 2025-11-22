@@ -1,0 +1,29 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "laporin-b4a18",
+          "appId": "1:168654237897:android:d448cae830ddb42e7f5d18",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "laporin-b4a18",
+          "configurations": {
+            "android": "1:168654237897:android:d448cae830ddb42e7f5d18",
+            "ios": "1:168654237897:ios:31df9240492bf2b47f5d18",
+            "macos": "1:168654237897:ios:31df9240492bf2b47f5d18",
+            "web": "1:168654237897:web:8ea56bb268adbf3f7f5d18",
+            "windows": "1:168654237897:web:7febe5f00f96acae7f5d18"
+          }
+        }
+      }
+    }
+  }
+}

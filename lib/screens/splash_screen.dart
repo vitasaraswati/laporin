@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:laporin/constants/colors.dart';
 import 'package:laporin/constants/text_styles.dart';
+import 'package:laporin/providers/auth_provider.dart';
+import 'package:laporin/providers/onboarding_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -40,12 +43,36 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _animationController.forward();
 
-    // Navigate after splash
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        context.go('/onboarding');
+    // Navigate after splash with proper auth check
+    _navigateToNextScreen();
+  }
+
+  Future<void> _navigateToNextScreen() async {
+    // Wait for animation
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isOnboardingComplete = await OnboardingProvider.isOnboardingComplete();
+
+    if (!mounted) return;
+
+    // Check authentication status
+    if (authProvider.isAuthenticated) {
+      // User is logged in - navigate to appropriate home
+      if (authProvider.isAdmin) {
+        context.go('/admin');
+      } else {
+        context.go('/home');
       }
-    });
+    } else if (isOnboardingComplete) {
+      // Onboarding done but not logged in - go to login
+      context.go('/login');
+    } else {
+      // First time user - show onboarding
+      context.go('/onboarding');
+    }
   }
 
   @override

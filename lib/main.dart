@@ -2,20 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:laporin/constants/colors.dart';
 import 'package:laporin/providers/auth_provider.dart';
 import 'package:laporin/providers/onboarding_provider.dart';
+import 'package:laporin/providers/report_provider.dart';
 import 'package:laporin/routes/app_router.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
+  // Initialize Firebase
+  try {
+    await Firebase.initializeApp();
+    debugPrint('✅ Firebase initialized successfully');
+  } catch (e) {
+    debugPrint('⚠️ Firebase initialization failed: $e');
+    debugPrint('📝 App will run in mock mode without Firebase');
+  }
+
   // Set preferred orientations
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -38,11 +49,12 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           final router = AppRouter(authProvider).router;
-          
+
           return MaterialApp.router(
             title: 'LaporJTI',
             debugShowCheckedModeBanner: false,

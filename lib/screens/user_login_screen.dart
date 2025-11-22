@@ -5,63 +5,42 @@ import 'package:laporin/constants/colors.dart';
 import 'package:laporin/constants/text_styles.dart';
 import 'package:laporin/providers/auth_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class UserLoginScreen extends StatefulWidget {
+  const UserLoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<UserLoginScreen> createState() => _UserLoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _UserLoginScreenState extends State<UserLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
-  bool _agreeToTerms = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleRegister() async {
-    if (!_agreeToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Anda harus menyetujui syarat dan ketentuan'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
-
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
 
-      final success = await authProvider.registerSimple(
+      final success = await authProvider.loginUser(
         _emailController.text.trim(),
         _passwordController.text,
       );
 
       if (mounted) {
         if (success) {
-          // Navigate to profile page to complete registration
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Registrasi berhasil! Lengkapi data diri Anda'),
-              backgroundColor: AppColors.success,
-            ),
-          );
-          context.go('/profile');
+          context.go('/home');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(authProvider.errorMessage ?? 'Registrasi gagal'),
+              content: Text(authProvider.errorMessage ?? 'Login gagal'),
               backgroundColor: AppColors.error,
             ),
           );
@@ -108,7 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                       ),
                       child: const Icon(
-                        Icons.person_add_outlined,
+                        Icons.person_outline,
                         size: 40,
                         color: AppColors.white,
                       ),
@@ -118,17 +97,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   // Title
                   Text(
-                    'Buat Akun Baru',
+                    'Login User',
                     style: AppTextStyles.h2,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Daftar dengan email untuk mulai menggunakan aplikasi',
+                    'Masuk sebagai Mahasiswa atau Civitas Akademika',
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 40),
 
                   // Email Field
                   Text(
@@ -228,157 +207,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
 
-                  // Confirm Password Field
-                  Text(
-                    'Konfirmasi Password',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    decoration: InputDecoration(
-                      hintText: 'Konfirmasi password Anda',
-                      hintStyle: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textHint,
-                      ),
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.greyLight),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.greyLight),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.background,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Konfirmasi password tidak boleh kosong';
-                      }
-                      if (value != _passwordController.text) {
-                        return 'Password tidak cocok';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Info Card
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.primary.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
+                  // Forgot Password
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Fitur lupa password akan segera hadir'),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Lupa Password?',
+                        style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.primary,
-                          size: 20,
+                          fontWeight: FontWeight.w600,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Anda akan diminta melengkapi data diri setelah registrasi',
-                            style: AppTextStyles.caption.copyWith(
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Terms and Conditions
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Checkbox(
-                        value: _agreeToTerms,
-                        onChanged: (value) {
-                          setState(() {
-                            _agreeToTerms = value ?? false;
-                          });
-                        },
-                        activeColor: AppColors.primary,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _agreeToTerms = !_agreeToTerms;
-                              });
-                            },
-                            child: RichText(
-                              text: TextSpan(
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                                children: [
-                                  const TextSpan(text: 'Saya setuju dengan '),
-                                  TextSpan(
-                                    text: 'Syarat dan Ketentuan',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const TextSpan(text: ' serta '),
-                                  TextSpan(
-                                    text: 'Kebijakan Privasi',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                   const SizedBox(height: 24),
 
-                  // Register Button
+                  // Login Button
                   Consumer<AuthProvider>(
                     builder: (context, authProvider, child) {
                       return SizedBox(
                         width: double.infinity,
                         height: 54,
                         child: ElevatedButton(
-                          onPressed: authProvider.isLoading ? null : _handleRegister,
+                          onPressed: authProvider.isLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.white,
@@ -397,7 +257,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                 )
                               : Text(
-                                  'Daftar',
+                                  'Masuk',
                                   style: AppTextStyles.button,
                                 ),
                         ),
@@ -406,19 +266,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Login Link
+                  // Register Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Sudah punya akun? ',
+                        'Belum punya akun? ',
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
                       TextButton(
                         onPressed: () {
-                          context.push('/login/user');
+                          context.push('/register');
                         },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
@@ -426,7 +286,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          'Masuk',
+                          'Daftar Sekarang',
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,

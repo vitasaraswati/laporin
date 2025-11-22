@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168654237897",
+    "project_id": "laporin-b4a18",
+    "storage_bucket": "laporin-b4a18.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168654237897:android:d448cae830ddb42e7f5d18",
+        "android_client_info": {
+          "package_name": "com.example.laporin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsSID1TnbC5Djrna__6g8zVQalZDsgpzE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
