@@ -628,15 +628,27 @@ class AuthProvider with ChangeNotifier {
       }
 
       // Create User object from Firestore data
+      DateTime createdAt;
+      final createdAtValue = admin['created_at'];
+      if (createdAtValue != null) {
+        try {
+          createdAt = (createdAtValue as dynamic).toDate();
+        } catch (_) {
+          createdAt = DateTime.now();
+        }
+      } else {
+        createdAt = DateTime.now();
+      }
+
       _currentUser = User(
         id: admin['id'],
-        name: admin['name'],
+        name: admin['name'] ?? 'Admin',
         email: admin['email'] ?? 'admin@laporin.com',
         role: UserRole.admin,
         nip: admin['nip'],
         phone: admin['phone'],
         avatarUrl: admin['avatar_url'],
-        createdAt: (admin['created_at'] as dynamic).toDate(),
+        createdAt: createdAt,
       );
 
       await _saveUserData(_currentUser!);

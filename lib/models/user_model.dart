@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:laporin/models/enums.dart';
 
 class User {
@@ -24,10 +25,21 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    // Handle created_at which can be Timestamp, String, or null
+    DateTime createdAt;
+    final createdAtValue = json['created_at'];
+    if (createdAtValue is Timestamp) {
+      createdAt = createdAtValue.toDate();
+    } else if (createdAtValue is String) {
+      createdAt = DateTime.parse(createdAtValue);
+    } else {
+      createdAt = DateTime.now();
+    }
+
     return User(
       id: json['id'] as String,
-      name: json['name'] as String,
-      email: json['email'] as String,
+      name: json['name'] as String? ?? 'User',
+      email: json['email'] as String? ?? '',
       role: UserRole.values.firstWhere(
         (e) => e.name == json['role'],
         orElse: () => UserRole.mahasiswa,
@@ -36,7 +48,7 @@ class User {
       nip: json['nip'] as String?,
       phone: json['phone'] as String?,
       avatarUrl: json['avatar_url'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: createdAt,
     );
   }
 
