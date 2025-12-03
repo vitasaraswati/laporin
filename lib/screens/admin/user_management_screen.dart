@@ -321,141 +321,63 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: role.color.withOpacity(0.2),
-                    child: Text(
-                      (user['name'] as String).substring(0, 1).toUpperCase(),
-                      style: TextStyle(
-                        color: role.color,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+              CircleAvatar(
+                backgroundColor: role.color.withOpacity(0.2),
+                child: Text(
+                  (user['name'] as String).substring(0, 1).toUpperCase(),
+                  style: TextStyle(
+                    color: role.color,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user['name'] as String,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          user['email'] as String,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: role.color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: role.color.withOpacity(0.3)),
-                    ),
-                    child: Text(
-                      role.displayName,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: role.color,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              if (user['nim'] != null || user['nip'] != null) ...[
-                const SizedBox(height: 12),
-                if (user['nim'] != null)
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.school,
-                        size: 16,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user['name'] as String,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      user['email'] as String,
+                      style: const TextStyle(
+                        fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'NIM: ${user['nim']}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                if (user['nip'] != null)
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.badge,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'NIP: ${user['nip']}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-              const SizedBox(height: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.edit, size: 16),
-                      label: const Text('Edit Role'),
-                      onPressed: () =>
-                          _showEditRoleDialog(context, user, userProvider),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: const BorderSide(color: AppColors.primary),
-                      ),
+                  IconButton(
+                    onPressed: () => _showUserDetailDialog(context, user, userProvider),
+                    icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                    style: IconButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      backgroundColor: AppColors.primary.withOpacity(0.1),
+                      padding: const EdgeInsets.all(8),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.edit, size: 16),
-                      label: const Text('Edit Data'),
-                      onPressed: () =>
-                          _showEditUserDialog(context, user, userProvider),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.secondary,
-                        side: const BorderSide(color: AppColors.secondary),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  OutlinedButton(
-                    onPressed: () =>
-                        _showDeleteUserDialog(context, user, userProvider),
-                    style: OutlinedButton.styleFrom(
+                  IconButton(
+                    onPressed: () => _showDeleteUserDialog(context, user, userProvider),
+                    icon: const Icon(Icons.delete, size: 16),
+                    style: IconButton.styleFrom(
                       foregroundColor: AppColors.error,
-                      side: const BorderSide(color: AppColors.error),
+                      backgroundColor: AppColors.error.withOpacity(0.1),
+                      padding: const EdgeInsets.all(8),
                     ),
-                    child: const Icon(Icons.delete, size: 16),
                   ),
                 ],
               ),
@@ -853,104 +775,134 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  void _showEditRoleDialog(
+  void _showUserDetailDialog(
     BuildContext context,
     Map<String, dynamic> user,
     UserManagementProvider userProvider,
   ) {
-    UserRole currentRole = UserRole.values.firstWhere(
+    final role = UserRole.values.firstWhere(
       (r) => r.name == user['role'],
       orElse: () => UserRole.user,
     );
-    UserRole selectedRole = currentRole;
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text('Edit Role - ${user['name']}'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Email: ${user['email']}'),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<UserRole>(
-                value: selectedRole,
-                decoration: const InputDecoration(
-                  labelText: 'Role Baru',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.admin_panel_settings),
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: role.color.withOpacity(0.2),
+              child: Text(
+                (user['name'] as String).substring(0, 1).toUpperCase(),
+                style: TextStyle(
+                  color: role.color,
+                  fontWeight: FontWeight.bold,
                 ),
-                items: UserRole.values.map((role) {
-                  return DropdownMenuItem<UserRole>(
-                    value: role,
-                    child: Row(
-                      children: [
-                        Icon(_getRoleIcon(role), color: role.color, size: 20),
-                        const SizedBox(width: 8),
-                        Text(role.displayName),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setDialogState(() {
-                    selectedRole = value!;
-                  });
-                },
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
             ),
-            ElevatedButton(
-              onPressed: selectedRole == currentRole || userProvider.isLoading
-                  ? null
-                  : () async {
-                      final success = await userProvider.updateUserRole(
-                        user['id'],
-                        selectedRole,
-                      );
-
-                      if (success && context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Role berhasil diupdate!'),
-                            backgroundColor: AppColors.success,
-                          ),
-                        );
-                      } else if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              userProvider.errorMessage ??
-                                  'Gagal mengupdate role',
-                            ),
-                            backgroundColor: AppColors.error,
-                          ),
-                        );
-                      }
-                    },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user['name'] as String,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    role.displayName,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: role.color,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-              child: userProvider.isLoading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Text('Update Role'),
             ),
           ],
         ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDetailRow('Email', user['email'] as String, Icons.email),
+              if (user['nim'] != null && user['nim'].toString().isNotEmpty)
+                _buildDetailRow('NIM', user['nim'] as String, Icons.school),
+              if (user['nip'] != null && user['nip'].toString().isNotEmpty)
+                _buildDetailRow('NIP', user['nip'] as String, Icons.badge),
+              if (user['phone'] != null && user['phone'].toString().isNotEmpty)
+                _buildDetailRow('Telepon', user['phone'] as String, Icons.phone),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.edit, size: 16),
+                  label: const Text('Edit User'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showEditUserDialog(context, user, userProvider);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: AppColors.textSecondary,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -966,156 +918,198 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     final nimController = TextEditingController(text: user['nim'] ?? '');
     final nipController = TextEditingController(text: user['nip'] ?? '');
 
-    final currentRole = UserRole.values.firstWhere(
+    UserRole currentRole = UserRole.values.firstWhere(
       (r) => r.name == user['role'],
       orElse: () => UserRole.user,
     );
+    UserRole selectedRole = currentRole;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Edit Data - ${user['name']}'),
-        content: Form(
-          key: formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nama Lengkap',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Nama tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 12),
-                if (currentRole == UserRole.mahasiswa)
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text('Edit User - ${user['name']}'),
+          content: Form(
+            key: formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   TextFormField(
-                    controller: nimController,
+                    controller: nameController,
                     decoration: const InputDecoration(
-                      labelText: 'NIM',
+                      labelText: 'Nama Lengkap',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.school),
+                      prefixIcon: Icon(Icons.person),
                     ),
-                    keyboardType: TextInputType.number,
                     validator: (value) {
-                      if (currentRole == UserRole.mahasiswa) {
-                        if (value == null || value.isEmpty) {
-                          return 'NIM tidak boleh kosong';
-                        }
-                        if (value.length != 10) {
-                          return 'NIM harus 10 digit';
-                        }
+                      if (value == null || value.isEmpty) {
+                        return 'Nama tidak boleh kosong';
                       }
                       return null;
                     },
                   ),
-                if (currentRole == UserRole.dosen)
-                  TextFormField(
-                    controller: nipController,
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<UserRole>(
+                    value: selectedRole,
                     decoration: const InputDecoration(
-                      labelText: 'NIP',
+                      labelText: 'Role',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.badge),
+                      prefixIcon: Icon(Icons.admin_panel_settings),
                     ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (currentRole == UserRole.dosen) {
-                        if (value == null || value.isEmpty) {
-                          return 'NIP tidak boleh kosong';
-                        }
-                        if (value.length != 18) {
-                          return 'NIP harus 18 digit';
-                        }
-                      }
-                      return null;
-                    },
-                  ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'No. Telepon',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.phone),
-                  ),
-                  keyboardType: TextInputType.phone,
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            onPressed: userProvider.isLoading
-                ? null
-                : () async {
-                    if (formKey.currentState!.validate()) {
-                      final updateData = <String, dynamic>{
-                        'name': nameController.text,
-                        'phone': phoneController.text.isNotEmpty
-                            ? phoneController.text
-                            : null,
-                      };
-
-                      if (currentRole == UserRole.mahasiswa) {
-                        updateData['nim'] = nimController.text;
-                      } else if (currentRole == UserRole.dosen) {
-                        updateData['nip'] = nipController.text;
-                      }
-
-                      final success = await userProvider.updateUser(
-                        user['id'],
-                        updateData,
+                    items: UserRole.values.map((role) {
+                      return DropdownMenuItem<UserRole>(
+                        value: role,
+                        child: Row(
+                          children: [
+                            Icon(_getRoleIcon(role), color: role.color, size: 20),
+                            const SizedBox(width: 8),
+                            Text(role.displayName),
+                          ],
+                        ),
                       );
-
-                      if (success && context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Data user berhasil diupdate!'),
-                            backgroundColor: AppColors.success,
-                          ),
-                        );
-                      } else if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              userProvider.errorMessage ??
-                                  'Gagal mengupdate data user',
-                            ),
-                            backgroundColor: AppColors.error,
-                          ),
-                        );
-                      }
-                    }
-                  },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-            ),
-            child: userProvider.isLoading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
+                    }).toList(),
+                    onChanged: (value) {
+                      setDialogState(() {
+                        selectedRole = value!;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  if (selectedRole == UserRole.mahasiswa)
+                    TextFormField(
+                      controller: nimController,
+                      decoration: const InputDecoration(
+                        labelText: 'NIM',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.school),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (selectedRole == UserRole.mahasiswa) {
+                          if (value == null || value.isEmpty) {
+                            return 'NIM tidak boleh kosong';
+                          }
+                          if (value.length != 10) {
+                            return 'NIM harus 10 digit';
+                          }
+                        }
+                        return null;
+                      },
                     ),
-                  )
-                : const Text('Update Data'),
+                  if (selectedRole == UserRole.dosen)
+                    TextFormField(
+                      controller: nipController,
+                      decoration: const InputDecoration(
+                        labelText: 'NIP',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.badge),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (selectedRole == UserRole.dosen) {
+                          if (value == null || value.isEmpty) {
+                            return 'NIP tidak boleh kosong';
+                          }
+                          if (value.length != 18) {
+                            return 'NIP harus 18 digit';
+                          }
+                        }
+                        return null;
+                      },
+                    ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: phoneController,
+                    decoration: const InputDecoration(
+                      labelText: 'No. Telepon',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.phone),
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: userProvider.isLoading
+                  ? null
+                  : () async {
+                      if (formKey.currentState!.validate()) {
+                        bool success = true;
+
+                        // Update role if changed
+                        if (selectedRole != currentRole) {
+                          success = await userProvider.updateUserRole(
+                            user['id'],
+                            selectedRole,
+                          );
+                        }
+
+                        // Update user data if role update was successful
+                        if (success) {
+                          final updateData = <String, dynamic>{
+                            'name': nameController.text,
+                            'phone': phoneController.text.isNotEmpty
+                                ? phoneController.text
+                                : null,
+                          };
+
+                          if (selectedRole == UserRole.mahasiswa) {
+                            updateData['nim'] = nimController.text;
+                          } else if (selectedRole == UserRole.dosen) {
+                            updateData['nip'] = nipController.text;
+                          }
+
+                          success = await userProvider.updateUser(
+                            user['id'],
+                            updateData,
+                          );
+                        }
+
+                        if (success && context.mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('User berhasil diupdate!'),
+                              backgroundColor: AppColors.success,
+                            ),
+                          );
+                        } else if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                userProvider.errorMessage ??
+                                    'Gagal mengupdate user',
+                              ),
+                              backgroundColor: AppColors.error,
+                            ),
+                          );
+                        }
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+              ),
+              child: userProvider.isLoading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('Update User'),
+            ),
+          ],
+        ),
       ),
     );
   }
