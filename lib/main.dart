@@ -56,16 +56,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
-        ChangeNotifierProvider(
-          create: (_) => ReportProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => UserManagementProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
+        ChangeNotifierProvider(create: (_) => UserManagementProvider()),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {

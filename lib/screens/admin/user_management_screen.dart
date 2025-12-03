@@ -23,8 +23,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<UserManagementProvider, AuthProvider>(
-      builder: (context, userProvider, authProvider, child) {
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
         // Check admin permissions
         if (!authProvider.hasAdminPermissions) {
           return Scaffold(
@@ -37,11 +37,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.lock,
-                    size: 64,
-                    color: AppColors.textSecondary,
-                  ),
+                  Icon(Icons.lock, size: 64, color: AppColors.textSecondary),
                   SizedBox(height: 16),
                   Text(
                     'Akses Ditolak',
@@ -66,23 +62,18 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           );
         }
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('User Management'),
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () => _showAddUserDialog(context, userProvider),
+        return Consumer<UserManagementProvider>(
+          builder: (context, userProvider, child) {
+            return Scaffold(
+              backgroundColor: AppColors.background,
+              appBar: AppBar(
+                title: const Text('Admin Panel'),
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
               ),
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () => userProvider.loadUsers(),
-              ),
-            ],
-          ),
-          body: _buildBody(context, userProvider),
+              body: _buildBody(context, userProvider),
+            );
+          },
         );
       },
     );
@@ -91,9 +82,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   Widget _buildBody(BuildContext context, UserManagementProvider userProvider) {
     if (userProvider.isLoading) {
       return const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primary,
-        ),
+        child: CircularProgressIndicator(color: AppColors.primary),
       );
     }
 
@@ -102,11 +91,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
             const SizedBox(height: 16),
             const Text(
               'Terjadi Kesalahan',
@@ -141,30 +126,36 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       );
     }
 
-    return Column(
-      children: [
-        _buildStatisticsCard(userProvider),
-        _buildSearchAndFilter(context, userProvider),
-        Expanded(
-          child: _buildUserList(context, userProvider),
-        ),
-      ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildStatisticsGrid(userProvider),
+          const SizedBox(height: 20),
+          _buildAddUserAndFilterSection(context, userProvider),
+          const SizedBox(height: 16),
+          _buildSearchSection(context, userProvider),
+          const SizedBox(height: 12),
+          _buildUserList(context, userProvider),
+        ],
+      ),
     );
   }
 
-  Widget _buildStatisticsCard(UserManagementProvider userProvider) {
+  Widget _buildStatisticsGrid(UserManagementProvider userProvider) {
     final stats = userProvider.getUserStatistics();
-    
+
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
@@ -175,12 +166,12 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           const Text(
             'Statistik User',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
@@ -227,21 +218,27 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  Widget _buildStatItem(String title, String value, Color color, IconData icon) {
+  Widget _buildStatItem(
+    String title,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 4),
+          Icon(icon, color: color, size: 18),
+          const SizedBox(height: 2),
           Text(
             value,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -249,75 +246,20 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 12,
+              fontSize: 10,
               color: AppColors.textSecondary,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSearchAndFilter(BuildContext context, UserManagementProvider userProvider) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          // Search field
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Cari nama, email, NIM, atau NIP...',
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: userProvider.searchQuery.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () => userProvider.searchUsers(''),
-                    )
-                  : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.primary.withOpacity(0.3)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.primary),
-              ),
-            ),
-            onChanged: (value) => userProvider.searchUsers(value),
-          ),
-          const SizedBox(height: 12),
-          // Status filter
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildStatusFilterChip('Semua', 'all', userProvider),
-                _buildStatusFilterChip('User Terverifikasi', 'verified', userProvider),
-                _buildStatusFilterChip('User Publik', 'public', userProvider),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusFilterChip(String label, String status, UserManagementProvider userProvider) {
-    final isSelected = userProvider.filterStatus == status;
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Text(label),
-        selected: isSelected,
-        onSelected: (_) => userProvider.filterByStatus(isSelected ? 'all' : status),
-        selectedColor: AppColors.primary.withOpacity(0.2),
-        checkmarkColor: AppColors.primary,
-      ),
-    );
-  }
-
-  Widget _buildUserList(BuildContext context, UserManagementProvider userProvider) {
+  Widget _buildUserList(
+    BuildContext context,
+    UserManagementProvider userProvider,
+  ) {
     final users = userProvider.filteredUsers;
 
     if (users.isEmpty) {
@@ -342,10 +284,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             SizedBox(height: 8),
             Text(
               'Coba ubah filter atau kata kunci pencarian',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -353,6 +292,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     }
 
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: users.length,
       itemBuilder: (context, index) {
@@ -362,7 +303,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  Widget _buildUserCard(BuildContext context, Map<String, dynamic> user, UserManagementProvider userProvider) {
+  Widget _buildUserCard(
+    BuildContext context,
+    Map<String, dynamic> user,
+    UserManagementProvider userProvider,
+  ) {
     final role = UserRole.values.firstWhere(
       (r) => r.name == user['role'],
       orElse: () => UserRole.user,
@@ -372,9 +317,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -416,7 +359,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: role.color.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(6),
@@ -438,7 +384,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 if (user['nim'] != null)
                   Row(
                     children: [
-                      const Icon(Icons.school, size: 16, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.school,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'NIM: ${user['nim']}',
@@ -452,7 +402,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 if (user['nip'] != null)
                   Row(
                     children: [
-                      const Icon(Icons.badge, size: 16, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.badge,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'NIP: ${user['nip']}',
@@ -471,7 +425,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.edit, size: 16),
                       label: const Text('Edit Role'),
-                      onPressed: () => _showEditRoleDialog(context, user, userProvider),
+                      onPressed: () =>
+                          _showEditRoleDialog(context, user, userProvider),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
                         side: const BorderSide(color: AppColors.primary),
@@ -483,7 +438,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.edit, size: 16),
                       label: const Text('Edit Data'),
-                      onPressed: () => _showEditUserDialog(context, user, userProvider),
+                      onPressed: () =>
+                          _showEditUserDialog(context, user, userProvider),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.secondary,
                         side: const BorderSide(color: AppColors.secondary),
@@ -492,7 +448,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   ),
                   const SizedBox(width: 8),
                   OutlinedButton(
-                    onPressed: () => _showDeleteUserDialog(context, user, userProvider),
+                    onPressed: () =>
+                        _showDeleteUserDialog(context, user, userProvider),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.error,
                       side: const BorderSide(color: AppColors.error),
@@ -508,7 +465,104 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  void _showAddUserDialog(BuildContext context, UserManagementProvider userProvider) {
+  Widget _buildAddUserAndFilterSection(BuildContext context, UserManagementProvider userProvider) {
+    return Row(
+      children: [
+        // Left side: Tambahkan User with + button
+        Row(
+          children: [
+            const Text(
+              'Tambahkan User',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.add, color: Colors.white, size: 18),
+                onPressed: () => _showAddUserDialog(context, userProvider),
+              ),
+            ),
+          ],
+        ),
+        const Spacer(),
+        // Right side: Filter dropdown
+        Row(
+          children: [
+            const Text(
+              'Filter:',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(width: 8),
+            DropdownButton<String>(
+              value: userProvider.currentFilter ?? 'all',
+              underline: const SizedBox(),
+              icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.primary, size: 16),
+              style: const TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+              items: const [
+                DropdownMenuItem(value: 'all', child: Text('Semua')),
+                DropdownMenuItem(value: 'verified', child: Text('Terverifikasi')),
+                DropdownMenuItem(value: 'public', child: Text('User Publik')),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    userProvider.filterByStatus(value);
+                  }
+                },
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchSection(BuildContext context, UserManagementProvider userProvider) {
+    return TextField(
+      decoration: InputDecoration(
+        hintText: 'Cari nama, email, NIM, atau NIP...',
+        hintStyle: const TextStyle(fontSize: 14),
+        prefixIcon: const Icon(Icons.search, size: 20),
+        suffixIcon: userProvider.searchQuery.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear, size: 18),
+                onPressed: () => userProvider.searchUsers(''),
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppColors.primary.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.primary),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      ),
+      style: const TextStyle(fontSize: 14),
+      onChanged: (value) => userProvider.searchUsers(value),
+    );
+  }
+
+  void _showAddUserDialog(
+    BuildContext context,
+    UserManagementProvider userProvider,
+  ) {
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
     final emailController = TextEditingController();
@@ -559,7 +613,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Email tidak boleh kosong';
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Format email tidak valid';
                       }
                       return null;
@@ -575,7 +631,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                          isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
                         onPressed: () {
                           setDialogState(() {
@@ -604,11 +662,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                          isConfirmPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
                         onPressed: () {
                           setDialogState(() {
-                            isConfirmPasswordVisible = !isConfirmPasswordVisible;
+                            isConfirmPasswordVisible =
+                                !isConfirmPasswordVisible;
                           });
                         },
                       ),
@@ -725,9 +786,15 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           email: emailController.text,
                           password: passwordController.text,
                           role: selectedRole,
-                          nim: selectedRole == UserRole.mahasiswa ? nimController.text : null,
-                          nip: selectedRole == UserRole.dosen ? nipController.text : null,
-                          phone: phoneController.text.isNotEmpty ? phoneController.text : null,
+                          nim: selectedRole == UserRole.mahasiswa
+                              ? nimController.text
+                              : null,
+                          nip: selectedRole == UserRole.dosen
+                              ? nipController.text
+                              : null,
+                          phone: phoneController.text.isNotEmpty
+                              ? phoneController.text
+                              : null,
                         );
 
                         if (success && context.mounted) {
@@ -741,7 +808,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         } else if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(userProvider.errorMessage ?? 'Gagal membuat user'),
+                              content: Text(
+                                userProvider.errorMessage ??
+                                    'Gagal membuat user',
+                              ),
                               backgroundColor: AppColors.error,
                             ),
                           );
@@ -768,7 +838,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  void _showEditRoleDialog(BuildContext context, Map<String, dynamic> user, UserManagementProvider userProvider) {
+  void _showEditRoleDialog(
+    BuildContext context,
+    Map<String, dynamic> user,
+    UserManagementProvider userProvider,
+  ) {
     UserRole currentRole = UserRole.values.firstWhere(
       (r) => r.name == user['role'],
       orElse: () => UserRole.user,
@@ -797,11 +871,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     value: role,
                     child: Row(
                       children: [
-                        Icon(
-                          _getRoleIcon(role),
-                          color: role.color,
-                          size: 20,
-                        ),
+                        Icon(_getRoleIcon(role), color: role.color, size: 20),
                         const SizedBox(width: 8),
                         Text(role.displayName),
                       ],
@@ -825,7 +895,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               onPressed: selectedRole == currentRole || userProvider.isLoading
                   ? null
                   : () async {
-                      final success = await userProvider.updateUserRole(user['id'], selectedRole);
+                      final success = await userProvider.updateUserRole(
+                        user['id'],
+                        selectedRole,
+                      );
 
                       if (success && context.mounted) {
                         Navigator.pop(context);
@@ -838,7 +911,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       } else if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(userProvider.errorMessage ?? 'Gagal mengupdate role'),
+                            content: Text(
+                              userProvider.errorMessage ??
+                                  'Gagal mengupdate role',
+                            ),
                             backgroundColor: AppColors.error,
                           ),
                         );
@@ -864,7 +940,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  void _showEditUserDialog(BuildContext context, Map<String, dynamic> user, UserManagementProvider userProvider) {
+  void _showEditUserDialog(
+    BuildContext context,
+    Map<String, dynamic> user,
+    UserManagementProvider userProvider,
+  ) {
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController(text: user['name']);
     final phoneController = TextEditingController(text: user['phone'] ?? '');
@@ -969,7 +1049,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     if (formKey.currentState!.validate()) {
                       final updateData = <String, dynamic>{
                         'name': nameController.text,
-                        'phone': phoneController.text.isNotEmpty ? phoneController.text : null,
+                        'phone': phoneController.text.isNotEmpty
+                            ? phoneController.text
+                            : null,
                       };
 
                       if (currentRole == UserRole.mahasiswa) {
@@ -978,7 +1060,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         updateData['nip'] = nipController.text;
                       }
 
-                      final success = await userProvider.updateUser(user['id'], updateData);
+                      final success = await userProvider.updateUser(
+                        user['id'],
+                        updateData,
+                      );
 
                       if (success && context.mounted) {
                         Navigator.pop(context);
@@ -991,7 +1076,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       } else if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(userProvider.errorMessage ?? 'Gagal mengupdate data user'),
+                            content: Text(
+                              userProvider.errorMessage ??
+                                  'Gagal mengupdate data user',
+                            ),
                             backgroundColor: AppColors.error,
                           ),
                         );
@@ -1017,7 +1105,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  void _showDeleteUserDialog(BuildContext context, Map<String, dynamic> user, UserManagementProvider userProvider) {
+  void _showDeleteUserDialog(
+    BuildContext context,
+    Map<String, dynamic> user,
+    UserManagementProvider userProvider,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1062,15 +1154,15 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     } else if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(userProvider.errorMessage ?? 'Gagal menghapus user'),
+                          content: Text(
+                            userProvider.errorMessage ?? 'Gagal menghapus user',
+                          ),
                           backgroundColor: AppColors.error,
                         ),
                       );
                     }
                   },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: userProvider.isLoading
                 ? const SizedBox(
                     width: 16,
@@ -1090,15 +1182,15 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   int _getVerifiedUsersCount(UserManagementProvider userProvider) {
     return userProvider.users.where((user) {
       return (user['nim'] != null && user['nim'].toString().isNotEmpty) ||
-             (user['nip'] != null && user['nip'].toString().isNotEmpty);
+          (user['nip'] != null && user['nip'].toString().isNotEmpty);
     }).length;
   }
 
   int _getPublicUsersCount(UserManagementProvider userProvider) {
     return userProvider.users.where((user) {
       return (user['nim'] == null || user['nim'].toString().isEmpty) &&
-             (user['nip'] == null || user['nip'].toString().isEmpty) &&
-             user['role'] != 'admin';
+          (user['nip'] == null || user['nip'].toString().isEmpty) &&
+          user['role'] != 'admin';
     }).length;
   }
 

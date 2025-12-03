@@ -23,6 +23,7 @@ class UserManagementProvider with ChangeNotifier {
   String get searchQuery => _searchQuery;
   UserRole? get filterRole => _filterRole;
   String get filterStatus => _filterStatus;
+  String? get currentFilter => _filterStatus;
 
   // Load all users
   Future<void> loadUsers() async {
