@@ -7,6 +7,7 @@ import 'package:laporin/constants/colors.dart';
 import 'package:laporin/providers/auth_provider.dart';
 import 'package:laporin/providers/onboarding_provider.dart';
 import 'package:laporin/providers/report_provider.dart';
+import 'package:laporin/providers/user_management_provider.dart';
 import 'package:laporin/routes/app_router.dart';
 import 'firebase_options.dart';
 
@@ -61,6 +62,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
         ChangeNotifierProvider(
           create: (_) => ReportProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserManagementProvider(),
         ),
       ],
       child: Consumer<AuthProvider>(

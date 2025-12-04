@@ -32,6 +32,10 @@ class AuthProvider with ChangeNotifier {
   bool get isAdmin => _currentUser?.role == UserRole.admin;
   bool get isMahasiswa => _currentUser?.role == UserRole.mahasiswa;
   bool get isDosen => _currentUser?.role == UserRole.dosen;
+  bool get isUser => _currentUser?.role == UserRole.user;
+  
+  // Check if user has admin-level permissions
+  bool get hasAdminPermissions => isAdmin || isDosen;
 
   AuthProvider() {
     _useFirebase = true; // Enable Firebase by default
@@ -518,6 +522,22 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  // Register with default role as User
+  Future<bool> registerAsUser(
+    String name,
+    String email,
+    String password, {
+    String? phone,
+  }) async {
+    return await register(
+      name,
+      email,
+      password,
+      UserRole.user, // Default role
+      phone: phone,
+    );
   }
 
   // Register with email and password only (simplified)

@@ -330,4 +330,46 @@ class FirestoreService {
       throw 'Gagal menghapus user: $e';
     }
   }
+
+  // Update user role (Admin only)
+  Future<void> updateUserRole(String userId, String role) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'role': role,
+        'updated_at': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw 'Gagal mengupdate role user: $e';
+    }
+  }
+
+  // Search users by name or email
+  Future<List<Map<String, dynamic>>> searchUsers(String query) async {
+    try {
+      // Get all users first since Firestore doesn't support OR queries easily
+      final snapshot = await _firestore
+          .collection('users')
+          .orderBy('created_at', descending: true)
+          .get();
+
+      final allUsers = snapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          ...doc.data(),
+        };
+      }).toList();
+
+      // Filter locally
+      final filteredUsers = allUsers.where((user) {
+        final name = (user['name'] ?? '').toString().toLowerCase();
+        final email = (user['email'] ?? '').toString().toLowerCase();
+        final searchQuery = query.toLowerCase();
+        return name.contains(searchQuery) || email.contains(searchQuery);
+      }).toList();
+
+      return filteredUsers;
+    } catch (e) {
+      throw 'Gagal mencari user: $e';
+    }
+  }
 }

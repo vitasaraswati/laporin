@@ -82,6 +82,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           'Admin Dashboard',
           style: AppTextStyles.h3.copyWith(color: AppColors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.people),
+            onPressed: () => Navigator.of(context).pushNamed('/admin/users'),
+            tooltip: 'User Management',
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: Container(
@@ -112,6 +119,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             children: [
               // Statistics Overview
               _buildStatisticsOverview(reportProvider),
+              
+              // Quick Actions
+              _buildQuickActions(),
 
               // Tab Content
               Expanded(
@@ -198,6 +208,118 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0);
+  }
+
+  Widget _buildQuickActions() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Quick Actions',
+            style: AppTextStyles.h3.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildQuickActionCard(
+                  'User Management',
+                  'Kelola user dan role',
+                  Icons.people,
+                  AppColors.secondary,
+                  () => Navigator.of(context).pushNamed('/admin/users'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildQuickActionCard(
+                  'Reports',
+                  'Lihat semua laporan',
+                  Icons.assignment,
+                  AppColors.primary,
+                  () => _tabController.animateTo(0),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 500.ms, delay: 100.ms);
+  }
+
+  Widget _buildQuickActionCard(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 20,
+                  ),
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: color.withOpacity(0.6),
+                  size: 16,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: AppTextStyles.bodyLarge.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildMiniStatCard(

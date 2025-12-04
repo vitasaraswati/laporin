@@ -3,34 +3,41 @@ import 'package:laporin/constants/colors.dart';
 
 // User Role Enum
 enum UserRole {
+  user, // Default role untuk user biasa
   mahasiswa,
   dosen,
   admin;
 
   String get displayName {
     switch (this) {
+      case UserRole.user:
+        return 'User Biasa';
       case UserRole.mahasiswa:
-        return 'Mahasiswa';
+        return 'Civitas (Mahasiswa)';
       case UserRole.dosen:
-        return 'Dosen';
+        return 'Staff/Pengelola';
       case UserRole.admin:
-        return 'Admin';
+        return 'Administrator';
     }
   }
 
   String get description {
     switch (this) {
+      case UserRole.user:
+        return 'Masyarakat umum - dapat membuat dan melihat laporan sendiri';
       case UserRole.mahasiswa:
-        return 'Dapat membuat dan melihat laporan';
+        return 'Civitas akademik (mahasiswa) - dapat membuat dan melihat laporan';
       case UserRole.dosen:
-        return 'Dapat membuat dan melihat laporan';
+        return 'Staff atau pengelola - dapat mengelola laporan';
       case UserRole.admin:
-        return 'Dapat mengelola dan menyetujui laporan';
+        return 'Administrator - akses penuh untuk mengelola sistem';
     }
   }
 
   Color get color {
     switch (this) {
+      case UserRole.user:
+        return AppColors.textSecondary;
       case UserRole.mahasiswa:
         return AppColors.primary;
       case UserRole.dosen:

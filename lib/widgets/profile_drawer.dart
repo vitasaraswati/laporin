@@ -276,6 +276,8 @@ class ProfileDrawer extends StatelessWidget {
 
   IconData _getRoleIcon(UserRole role) {
     switch (role) {
+      case UserRole.user:
+        return Icons.person_outline_rounded;
       case UserRole.mahasiswa:
         return Icons.school_rounded;
       case UserRole.dosen:

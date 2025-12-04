@@ -42,7 +42,7 @@ class User {
       email: json['email'] as String? ?? '',
       role: UserRole.values.firstWhere(
         (e) => e.name == json['role'],
-        orElse: () => UserRole.mahasiswa,
+        orElse: () => UserRole.user, // Default role jika tidak ditemukan
       ),
       nim: json['nim'] as String?,
       nip: json['nip'] as String?,

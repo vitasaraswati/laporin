@@ -43,7 +43,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
 
-      final success = await authProvider.registerSimple(
+      final success = await authProvider.registerAsUser(
+        _emailController.text.split('@')[0], // Name from email
         _emailController.text.trim(),
         _passwordController.text,
       );
