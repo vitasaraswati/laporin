@@ -14,13 +14,33 @@ class AdminLoginScreen extends StatefulWidget {
 
 class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _identityController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final authProvider = context.read<AuthProvider>();
+    final savedCredentials = await authProvider.getSavedAdminCredentials();
+    
+    if (savedCredentials['remember'] == true) {
+      setState(() {
+        _emailController.text = savedCredentials['identity'] ?? '';
+        _passwordController.text = savedCredentials['password'] ?? '';
+        _rememberMe = true;
+      });
+    }
+  }
 
   @override
   void dispose() {
-    _identityController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -30,8 +50,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       final authProvider = context.read<AuthProvider>();
 
       final success = await authProvider.loginAdmin(
-        _identityController.text.trim(),
+        _emailController.text.trim(),
         _passwordController.text,
+        rememberMe: _rememberMe,
       );
 
       if (mounted) {
@@ -97,35 +118,28 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
                   // Title
                   Text(
-                    'Login Admin',
+                    'Masuk sebagai Admin',
                     style: AppTextStyles.h2,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Masuk sebagai Administrator Sistem',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
                   ),
                   const SizedBox(height: 40),
 
-                  // Identity Number Field
+                  // Email Field
                   Text(
-                    'Nomor Identitas',
+                    'Email',
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _identityController,
-                    keyboardType: TextInputType.text,
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      hintText: 'Masukkan nomor identitas admin',
+                      hintText: 'Masukkan email admin',
                       hintStyle: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textHint,
                       ),
-                      prefixIcon: const Icon(Icons.badge_outlined),
+                      prefixIcon: const Icon(Icons.email_outlined),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(color: AppColors.greyLight),
@@ -143,7 +157,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Nomor identitas tidak boleh kosong';
+                        return 'Email tidak boleh kosong';
+                      }
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                        return 'Format email tidak valid';
                       }
                       return null;
                     },
@@ -204,38 +221,58 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
 
-                  // Warning Info
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.secondary.withOpacity(0.3),
+                  // Remember Me Checkbox
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _rememberMe,
+                        onChanged: (value) {
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
+                        },
+                        activeColor: AppColors.secondary,
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: AppColors.secondary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Area login khusus admin sistem',
-                            style: AppTextStyles.caption.copyWith(
-                              color: AppColors.secondary,
-                            ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Ingat Saya',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textPrimary,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          final authProvider = context.read<AuthProvider>();
+                          await authProvider.clearSavedAdminCredentials();
+                          setState(() {
+                            _emailController.clear();
+                            _passwordController.clear();
+                            _rememberMe = false;
+                          });
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Kredensial tersimpan telah dihapus'),
+                                backgroundColor: AppColors.success,
+                              ),
+                            );
+                          }
+                        },
+                        child: Text(
+                          'Hapus',
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
                   // Login Button
                   Consumer<AuthProvider>(
@@ -263,7 +300,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                   ),
                                 )
                               : Text(
-                                  'Masuk sebagai Admin',
+                                  'Masuk',
                                   style: AppTextStyles.button,
                                 ),
                         ),

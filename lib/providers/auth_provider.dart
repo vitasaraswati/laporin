@@ -339,6 +339,38 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  // Save admin credentials for remember me functionality
+  Future<void> saveAdminCredentials(String email, String password, bool remember) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (remember) {
+      await prefs.setString('admin_email', email);
+      await prefs.setString('admin_password', password);
+      await prefs.setBool('admin_remember', true);
+    } else {
+      await prefs.remove('admin_email');
+      await prefs.remove('admin_password');
+      await prefs.setBool('admin_remember', false);
+    }
+  }
+
+  // Get saved admin credentials
+  Future<Map<String, dynamic>> getSavedAdminCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'identity': prefs.getString('admin_email') ?? '',
+      'password': prefs.getString('admin_password') ?? '',
+      'remember': prefs.getBool('admin_remember') ?? false,
+    };
+  }
+
+  // Clear saved admin credentials
+  Future<void> clearSavedAdminCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('admin_email');
+    await prefs.remove('admin_password');
+    await prefs.setBool('admin_remember', false);
+  }
+
   // Update user profile
   Future<bool> updateProfile({
     String? name,
@@ -401,6 +433,14 @@ class AuthProvider with ChangeNotifier {
       await prefs.remove('user_phone');
       await prefs.remove('user_avatar');
       await prefs.remove('use_firebase');
+      
+      // Clear admin credentials if not remembering
+      final rememberAdmin = prefs.getBool('admin_remember') ?? false;
+      if (!rememberAdmin) {
+        await prefs.remove('admin_email');
+        await prefs.remove('admin_password');
+        await prefs.remove('admin_remember');
+      }
 
       _currentUser = null;
       _status = AuthStatus.unauthenticated;
@@ -639,14 +679,14 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Login Admin using Firestore data (no Firebase Auth)
-  Future<bool> loginAdmin(String identityNumber, String password) async {
+  Future<bool> loginAdmin(String email, String password, {bool rememberMe = false}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      // Query Firestore for admin with matching identity number
-      final admins = await _firestoreService.getAdminByIdentity(identityNumber);
+      // Query Firestore for admin with matching email
+      final admins = await _firestoreService.getAdminByEmail(email);
 
       if (admins.isEmpty) {
         _errorMessage = 'Admin tidak ditemukan';
@@ -691,6 +731,10 @@ class AuthProvider with ChangeNotifier {
       );
 
       await _saveUserData(_currentUser!);
+      
+      // Save credentials if remember me is enabled
+      await saveAdminCredentials(email, password, rememberMe);
+      
       _status = AuthStatus.authenticated;
       _useFirebase = false;
       _isLoading = false;
@@ -698,7 +742,7 @@ class AuthProvider with ChangeNotifier {
       return true;
     } catch (e) {
       // Fallback to mock admin for development
-      if (identityNumber == 'ADM001' && password == 'admin123') {
+      if (email == 'admin@laporin.com' && password == 'admin123') {
         _currentUser = User(
           id: 'admin001',
           name: 'Admin Laporin',
@@ -710,6 +754,10 @@ class AuthProvider with ChangeNotifier {
         );
 
         await _saveUserData(_currentUser!);
+        
+        // Save credentials if remember me is enabled
+        await saveAdminCredentials(email, password, rememberMe);
+        
         _status = AuthStatus.authenticated;
         _useFirebase = false;
         _isLoading = false;

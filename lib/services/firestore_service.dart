@@ -11,7 +11,9 @@ class FirestoreService {
   // Create a new report
   Future<String> createReport(Report report) async {
     try {
-      final docRef = await _firestore.collection('reports').add(report.toJson());
+      final docRef = await _firestore
+          .collection('reports')
+          .add(report.toJson());
       return docRef.id;
     } catch (e) {
       throw 'Gagal membuat laporan: $e';
@@ -24,12 +26,16 @@ class FirestoreService {
         .collection('reports')
         .orderBy('created_at', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Report.fromJson({
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => Report.fromJson({
                   ...doc.data(),
                   'id': doc.id, // Set AFTER spread to ensure correct doc ID
-                }))
-            .toList());
+                }),
+              )
+              .toList(),
+        );
   }
 
   // Get reports by user ID
@@ -39,12 +45,11 @@ class FirestoreService {
         .where('user_id', isEqualTo: userId)
         .orderBy('created_at', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Report.fromJson({
-                  ...doc.data(),
-                  'id': doc.id,
-                }))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => Report.fromJson({...doc.data(), 'id': doc.id}))
+              .toList(),
+        );
   }
 
   // Get reports by status
@@ -54,12 +59,11 @@ class FirestoreService {
         .where('status', isEqualTo: status.name)
         .orderBy('created_at', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Report.fromJson({
-                  ...doc.data(),
-                  'id': doc.id,
-                }))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => Report.fromJson({...doc.data(), 'id': doc.id}))
+              .toList(),
+        );
   }
 
   // Get single report by ID
@@ -67,10 +71,7 @@ class FirestoreService {
     try {
       final doc = await _firestore.collection('reports').doc(reportId).get();
       if (doc.exists) {
-        return Report.fromJson({
-          ...doc.data()!,
-          'id': doc.id,
-        });
+        return Report.fromJson({...doc.data()!, 'id': doc.id});
       }
       return null;
     } catch (e) {
@@ -91,7 +92,10 @@ class FirestoreService {
   }
 
   // Update report
-  Future<void> updateReport(String reportId, Map<String, dynamic> updates) async {
+  Future<void> updateReport(
+    String reportId,
+    Map<String, dynamic> updates,
+  ) async {
     try {
       updates['updated_at'] = FieldValue.serverTimestamp();
       await _firestore.collection('reports').doc(reportId).update(updates);
@@ -114,17 +118,20 @@ class FirestoreService {
     try {
       final snapshot = await _firestore.collection('reports').get();
       final reports = snapshot.docs
-          .map((doc) => Report.fromJson({
-                ...doc.data(),
-                'id': doc.id,
-              }))
+          .map((doc) => Report.fromJson({...doc.data(), 'id': doc.id}))
           .toList();
 
       return {
         'total': reports.length,
-        'inProgress': reports.where((r) => r.status == ReportStatus.inProgress).length,
-        'approved': reports.where((r) => r.status == ReportStatus.approved).length,
-        'rejected': reports.where((r) => r.status == ReportStatus.rejected).length,
+        'inProgress': reports
+            .where((r) => r.status == ReportStatus.inProgress)
+            .length,
+        'approved': reports
+            .where((r) => r.status == ReportStatus.approved)
+            .length,
+        'rejected': reports
+            .where((r) => r.status == ReportStatus.rejected)
+            .length,
       };
     } catch (e) {
       throw 'Gagal mengambil statistik: $e';
@@ -138,10 +145,7 @@ class FirestoreService {
     try {
       final doc = await _firestore.collection('users').doc(userId).get();
       if (doc.exists) {
-        return User.fromJson({
-          ...doc.data()!,
-          'id': doc.id,
-        });
+        return User.fromJson({...doc.data()!, 'id': doc.id});
       }
       return null;
     } catch (e) {
@@ -155,12 +159,11 @@ class FirestoreService {
         .collection('users')
         .orderBy('created_at', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => User.fromJson({
-                  ...doc.data(),
-                  'id': doc.id,
-                }))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => User.fromJson({...doc.data(), 'id': doc.id}))
+              .toList(),
+        );
   }
 
   // Get users by role
@@ -170,12 +173,11 @@ class FirestoreService {
         .where('role', isEqualTo: role.name)
         .orderBy('created_at', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => User.fromJson({
-                  ...doc.data(),
-                  'id': doc.id,
-                }))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => User.fromJson({...doc.data(), 'id': doc.id}))
+              .toList(),
+        );
   }
 
   // Update user
@@ -195,16 +197,19 @@ class FirestoreService {
       final snapshot = await _firestore.collection('reports').get();
 
       final reports = snapshot.docs
-          .map((doc) => Report.fromJson({
-                ...doc.data(),
-                'id': doc.id,
-              }))
+          .map((doc) => Report.fromJson({...doc.data(), 'id': doc.id}))
           .toList();
 
       return reports.where((report) {
-        final titleMatch = report.title.toLowerCase().contains(query.toLowerCase());
-        final descMatch = report.description.toLowerCase().contains(query.toLowerCase());
-        final categoryMatch = report.category.displayName.toLowerCase().contains(query.toLowerCase());
+        final titleMatch = report.title.toLowerCase().contains(
+          query.toLowerCase(),
+        );
+        final descMatch = report.description.toLowerCase().contains(
+          query.toLowerCase(),
+        );
+        final categoryMatch = report.category.displayName
+            .toLowerCase()
+            .contains(query.toLowerCase());
         return titleMatch || descMatch || categoryMatch;
       }).toList();
     } catch (e) {
@@ -248,7 +253,9 @@ class FirestoreService {
   // ========== ADMIN ==========
 
   // Get admin by identity number (NIP)
-  Future<List<Map<String, dynamic>>> getAdminByIdentity(String identityNumber) async {
+  Future<List<Map<String, dynamic>>> getAdminByIdentity(
+    String identityNumber,
+  ) async {
     try {
       final snapshot = await _firestore
           .collection('admins')
@@ -257,10 +264,26 @@ class FirestoreService {
           .get();
 
       return snapshot.docs.map((doc) {
-        return {
-          'id': doc.id,
-          ...doc.data(),
-        };
+        return {'id': doc.id, ...doc.data()};
+      }).toList();
+    } catch (e) {
+      throw 'Gagal mencari admin: $e';
+    }
+  }
+
+  // Get admin by email
+  Future<List<Map<String, dynamic>>> getAdminByEmail(
+    String email,
+  ) async {
+    try {
+      final snapshot = await _firestore
+          .collection('admins')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      return snapshot.docs.map((doc) {
+        return {'id': doc.id, ...doc.data()};
       }).toList();
     } catch (e) {
       throw 'Gagal mencari admin: $e';
@@ -301,10 +324,7 @@ class FirestoreService {
           .get();
 
       return snapshot.docs.map((doc) {
-        return {
-          'id': doc.id,
-          ...doc.data(),
-        };
+        return {'id': doc.id, ...doc.data()};
       }).toList();
     } catch (e) {
       throw 'Gagal mengambil data user: $e';
@@ -353,10 +373,7 @@ class FirestoreService {
           .get();
 
       final allUsers = snapshot.docs.map((doc) {
-        return {
-          'id': doc.id,
-          ...doc.data(),
-        };
+        return {'id': doc.id, ...doc.data()};
       }).toList();
 
       // Filter locally

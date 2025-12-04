@@ -69,34 +69,33 @@ class UserManagementProvider with ChangeNotifier {
   // Apply search and status filters
   void _applyFilters() {
     _filteredUsers = _users.where((user) {
-      final matchesSearch = _searchQuery.isEmpty ||
-          user['name']
-              .toString()
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase()) ||
-          (user['email'] ?? '')
-              .toString()
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase()) ||
-          (user['nim'] ?? '')
-              .toString()
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase()) ||
-          (user['nip'] ?? '')
-              .toString()
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase());
+      final matchesSearch =
+          _searchQuery.isEmpty ||
+          user['name'].toString().toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ) ||
+          (user['email'] ?? '').toString().toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ) ||
+          (user['nim'] ?? '').toString().toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ) ||
+          (user['nip'] ?? '').toString().toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          );
 
       bool matchesStatus = true;
       if (_filterStatus == 'verified') {
         // User yang punya NIM atau NIP
-        matchesStatus = (user['nim'] != null && user['nim'].toString().isNotEmpty) ||
-                       (user['nip'] != null && user['nip'].toString().isNotEmpty);
+        matchesStatus =
+            (user['nim'] != null && user['nim'].toString().isNotEmpty) ||
+            (user['nip'] != null && user['nip'].toString().isNotEmpty);
       } else if (_filterStatus == 'public') {
         // User yang tidak punya NIM atau NIP
-        matchesStatus = (user['nim'] == null || user['nim'].toString().isEmpty) &&
-                       (user['nip'] == null || user['nip'].toString().isEmpty) &&
-                       user['role'] != 'admin';
+        matchesStatus =
+            (user['nim'] == null || user['nim'].toString().isEmpty) &&
+            (user['nip'] == null || user['nip'].toString().isEmpty) &&
+            user['role'] != 'admin';
       } else if (_filterStatus == 'admin') {
         // Admin users
         matchesStatus = user['role'] == 'admin';
@@ -214,13 +213,15 @@ class UserManagementProvider with ChangeNotifier {
   // Get user statistics
   Map<String, int> getUserStatistics() {
     final stats = <String, int>{};
-    
+
     stats['total'] = _users.length;
-    
+
     for (final role in UserRole.values) {
-      stats[role.name] = _users.where((user) => user['role'] == role.name).length;
+      stats[role.name] = _users
+          .where((user) => user['role'] == role.name)
+          .length;
     }
-    
+
     return stats;
   }
 
@@ -233,7 +234,7 @@ class UserManagementProvider with ChangeNotifier {
   List<Map<String, dynamic>> getRecentUsers() {
     final now = DateTime.now();
     final weekAgo = now.subtract(const Duration(days: 7));
-    
+
     return _users.where((user) {
       final createdAt = user['created_at'];
       if (createdAt is String) {

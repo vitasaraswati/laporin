@@ -67,11 +67,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           builder: (context, userProvider, child) {
             return Scaffold(
               backgroundColor: AppColors.background,
-              appBar: widget.showAppBar ? AppBar(
-                title: const Text('Admin Panel'),
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-              ) : null,
+              appBar: widget.showAppBar
+                  ? AppBar(
+                      title: const Text('Admin Panel'),
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                    )
+                  : null,
               body: _buildBody(context, userProvider),
             );
           },
@@ -151,7 +153,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.background, // Changed from Colors.white untuk testing hot reload
+        color: AppColors
+            .background, // Changed from Colors.white untuk testing hot reload
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -361,7 +364,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    onPressed: () => _showUserDetailDialog(context, user, userProvider),
+                    onPressed: () =>
+                        _showUserDetailDialog(context, user, userProvider),
                     icon: const Icon(Icons.arrow_forward_ios, size: 16),
                     style: IconButton.styleFrom(
                       foregroundColor: AppColors.primary,
@@ -371,7 +375,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    onPressed: () => _showDeleteUserDialog(context, user, userProvider),
+                    onPressed: () =>
+                        _showDeleteUserDialog(context, user, userProvider),
                     icon: const Icon(Icons.delete, size: 16),
                     style: IconButton.styleFrom(
                       foregroundColor: AppColors.error,
@@ -445,16 +450,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             focusColor: Colors.transparent,
             dropdownColor: Colors.white,
             borderRadius: BorderRadius.circular(8),
-          items: const [
-            DropdownMenuItem(value: 'all', child: Text('Semua')),
-            DropdownMenuItem(value: 'verified', child: Text('Terverifikasi')),
-            DropdownMenuItem(value: 'public', child: Text('User Publik')),
-          ],
-          onChanged: (value) {
-            if (value != null) {
-              userProvider.filterByStatus(value);
-            }
-          },
+            items: const [
+              DropdownMenuItem(value: 'all', child: Text('Semua')),
+              DropdownMenuItem(value: 'verified', child: Text('Terverifikasi')),
+              DropdownMenuItem(value: 'public', child: Text('User Publik')),
+            ],
+            onChanged: (value) {
+              if (value != null) {
+                userProvider.filterByStatus(value);
+              }
+            },
           ),
         ),
       ],
@@ -836,7 +841,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               if (user['nip'] != null && user['nip'].toString().isNotEmpty)
                 _buildDetailRow('NIP', user['nip'] as String, Icons.badge),
               if (user['phone'] != null && user['phone'].toString().isNotEmpty)
-                _buildDetailRow('Telepon', user['phone'] as String, Icons.phone),
+                _buildDetailRow(
+                  'Telepon',
+                  user['phone'] as String,
+                  Icons.phone,
+                ),
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
@@ -872,11 +881,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: AppColors.textSecondary,
-          ),
+          Icon(icon, size: 20, color: AppColors.textSecondary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -962,7 +967,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         value: role,
                         child: Row(
                           children: [
-                            Icon(_getRoleIcon(role), color: role.color, size: 20),
+                            Icon(
+                              _getRoleIcon(role),
+                              color: role.color,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Text(role.displayName),
                           ],
