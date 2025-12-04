@@ -5,11 +5,7 @@ import 'package:laporin/models/enums.dart';
 import 'package:laporin/services/firebase_auth_service.dart';
 import 'package:laporin/services/firestore_service.dart';
 
-enum AuthStatus {
-  uninitialized,
-  authenticated,
-  unauthenticated,
-}
+enum AuthStatus { uninitialized, authenticated, unauthenticated }
 
 class AuthProvider with ChangeNotifier {
   final FirebaseAuthService _authService = FirebaseAuthService();
@@ -33,7 +29,7 @@ class AuthProvider with ChangeNotifier {
   bool get isMahasiswa => _currentUser?.role == UserRole.mahasiswa;
   bool get isDosen => _currentUser?.role == UserRole.dosen;
   bool get isUser => _currentUser?.role == UserRole.user;
-  
+
   // Check if user has admin-level permissions
   bool get hasAdminPermissions => isAdmin || isDosen;
 
@@ -93,7 +89,10 @@ class AuthProvider with ChangeNotifier {
         final name = prefs.getString('user_name');
         final roleStr = prefs.getString('user_role');
 
-        if (userId != null && email != null && name != null && roleStr != null) {
+        if (userId != null &&
+            email != null &&
+            name != null &&
+            roleStr != null) {
           final role = UserRole.values.firstWhere(
             (e) => e.name == roleStr,
             orElse: () => UserRole.mahasiswa,
@@ -132,7 +131,10 @@ class AuthProvider with ChangeNotifier {
     try {
       if (_useFirebase) {
         // Use Firebase authentication
-        final user = await _authService.signInWithEmailAndPassword(email, password);
+        final user = await _authService.signInWithEmailAndPassword(
+          email,
+          password,
+        );
 
         if (user != null) {
           _currentUser = user;
@@ -186,8 +188,12 @@ class AuthProvider with ChangeNotifier {
           name: email.split('@')[0],
           email: email,
           role: userRole,
-          nim: userRole == UserRole.mahasiswa ? '2341720$userId'.substring(0, 10) : null,
-          nip: userRole == UserRole.dosen ? '198${userId.substring(0, 10)}' : null,
+          nim: userRole == UserRole.mahasiswa
+              ? '2341720$userId'.substring(0, 10)
+              : null,
+          nip: userRole == UserRole.dosen
+              ? '198${userId.substring(0, 10)}'
+              : null,
           createdAt: DateTime.now(),
         );
 
@@ -428,7 +434,8 @@ class AuthProvider with ChangeNotifier {
     }
 
     // Mock Mahasiswa Account
-    if (email == 'mahasiswa@student.polinema.ac.id' && password == 'mahasiswa123') {
+    if (email == 'mahasiswa@student.polinema.ac.id' &&
+        password == 'mahasiswa123') {
       return User(
         id: 'mhs001',
         name: 'Budi Santoso',
@@ -466,10 +473,10 @@ class AuthProvider with ChangeNotifier {
   // Check if user has permission
   bool hasPermission(UserRole requiredRole) {
     if (_currentUser == null) return false;
-    
+
     // Admin has all permissions
     if (_currentUser!.role == UserRole.admin) return true;
-    
+
     // Check specific role
     return _currentUser!.role == requiredRole;
   }
@@ -492,7 +499,10 @@ class AuthProvider with ChangeNotifier {
 
     try {
       // Always use Firebase authentication for users
-      final user = await _authService.signInWithEmailAndPassword(email, password);
+      final user = await _authService.signInWithEmailAndPassword(
+        email,
+        password,
+      );
 
       if (user != null) {
         // Ensure the user is not admin

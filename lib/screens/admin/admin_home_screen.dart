@@ -61,7 +61,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Admin Panel',
+          'Dashboard Admin',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
@@ -338,7 +338,8 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
                     AppColors.primary,
                     () {
                       // Navigate to users tab (index 2)
-                      final homeState = context.findAncestorStateOfType<_AdminHomeScreenState>();
+                      final homeState = context
+                          .findAncestorStateOfType<_AdminHomeScreenState>();
                       homeState?.setState(() {
                         homeState._selectedIndex = 2;
                       });
@@ -354,7 +355,8 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
                     AppColors.secondary,
                     () {
                       // Navigate to reports tab (index 1)
-                      final homeState = context.findAncestorStateOfType<_AdminHomeScreenState>();
+                      final homeState = context
+                          .findAncestorStateOfType<_AdminHomeScreenState>();
                       homeState?.setState(() {
                         homeState._selectedIndex = 1;
                       });
@@ -369,7 +371,12 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -610,19 +617,25 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   'Diajukan',
-                  _reports.where((r) => r.status == ReportStatus.inProgress).length,
+                  _reports
+                      .where((r) => r.status == ReportStatus.inProgress)
+                      .length,
                   color: AppColors.warning,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   'Disetujui',
-                  _reports.where((r) => r.status == ReportStatus.approved).length,
+                  _reports
+                      .where((r) => r.status == ReportStatus.approved)
+                      .length,
                   color: AppColors.success,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   'Ditolak',
-                  _reports.where((r) => r.status == ReportStatus.rejected).length,
+                  _reports
+                      .where((r) => r.status == ReportStatus.rejected)
+                      .length,
                   color: AppColors.error,
                 ),
               ],
@@ -638,8 +651,11 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.inbox_outlined,
-                            size: 64, color: Colors.grey[400]),
+                        Icon(
+                          Icons.inbox_outlined,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'Tidak ada laporan',
@@ -746,7 +762,9 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: _getStatusColor(report.status).withValues(alpha: 0.1),
+                      color: _getStatusColor(
+                        report.status,
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Center(
@@ -773,8 +791,11 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
                         const SizedBox(height: 2),
                         Row(
                           children: [
-                            Icon(Icons.person_outline,
-                                size: 14, color: Colors.grey[600]),
+                            Icon(
+                              Icons.person_outline,
+                              size: 14,
+                              color: Colors.grey[600],
+                            ),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
@@ -801,10 +822,7 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
               // Description
               Text(
                 report.description,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[700],
-                ),
+                style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -819,18 +837,19 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
                   const SizedBox(width: 4),
                   Text(
                     DateFormat('dd MMM yyyy, HH:mm').format(report.createdAt),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey[500],
-                    ),
+                    style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                   ),
                   const Spacer(),
                   // Priority
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
-                      color: _getPriorityColor(report.priority).withValues(alpha: 0.1),
+                      color: _getPriorityColor(
+                        report.priority,
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -955,7 +974,10 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
               ),
               child: Row(
                 children: [
-                  Text(report.category.icon, style: const TextStyle(fontSize: 24)),
+                  Text(
+                    report.category.icon,
+                    style: const TextStyle(fontSize: 24),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -1041,11 +1063,16 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
               decoration: BoxDecoration(
                 color: AppColors.error.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
+                border: Border.all(
+                  color: AppColors.error.withValues(alpha: 0.2),
+                ),
               ),
               child: Row(
                 children: [
-                  Text(report.category.icon, style: const TextStyle(fontSize: 24)),
+                  Text(
+                    report.category.icon,
+                    style: const TextStyle(fontSize: 24),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -1195,7 +1222,7 @@ class AdminUsersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const UserManagementScreen();
+    return const UserManagementScreen(showAppBar: false);
   }
 }
 
@@ -1217,7 +1244,10 @@ class AdminProfileTab extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.secondary, AppColors.secondary.withOpacity(0.7)],
+                colors: [
+                  AppColors.secondary,
+                  AppColors.secondary.withOpacity(0.7),
+                ],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
@@ -1255,7 +1285,10 @@ class AdminProfileTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(12),

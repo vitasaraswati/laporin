@@ -118,10 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 32),
 
                   // Title
-                  Text(
-                    'Buat Akun Baru',
-                    style: AppTextStyles.h2,
-                  ),
+                  Text('Buat Akun Baru', style: AppTextStyles.h2),
                   const SizedBox(height: 8),
                   Text(
                     'Daftar dengan email untuk mulai menggunakan aplikasi',
@@ -150,15 +147,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: const Icon(Icons.email_outlined),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.greyLight),
+                        borderSide: const BorderSide(
+                          color: AppColors.greyLight,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.greyLight),
+                        borderSide: const BorderSide(
+                          color: AppColors.greyLight,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                        borderSide: const BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
+                        ),
                       ),
                       filled: true,
                       fillColor: AppColors.background,
@@ -167,7 +171,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Email tidak boleh kosong';
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Email tidak valid';
                       }
                       return null;
@@ -206,15 +212,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.greyLight),
+                        borderSide: const BorderSide(
+                          color: AppColors.greyLight,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.greyLight),
+                        borderSide: const BorderSide(
+                          color: AppColors.greyLight,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                        borderSide: const BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
+                        ),
                       ),
                       filled: true,
                       fillColor: AppColors.background,
@@ -262,15 +275,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.greyLight),
+                        borderSide: const BorderSide(
+                          color: AppColors.greyLight,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.greyLight),
+                        borderSide: const BorderSide(
+                          color: AppColors.greyLight,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                        borderSide: const BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
+                        ),
                       ),
                       filled: true,
                       fillColor: AppColors.background,
@@ -379,7 +399,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: double.infinity,
                         height: 54,
                         child: ElevatedButton(
-                          onPressed: authProvider.isLoading ? null : _handleRegister,
+                          onPressed: authProvider.isLoading
+                              ? null
+                              : _handleRegister,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.white,
@@ -397,10 +419,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : Text(
-                                  'Daftar',
-                                  style: AppTextStyles.button,
-                                ),
+                              : Text('Daftar', style: AppTextStyles.button),
                         ),
                       );
                     },

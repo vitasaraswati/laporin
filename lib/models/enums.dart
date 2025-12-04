@@ -90,8 +90,8 @@ enum ReportCategory {
 // Report Status Enum
 enum ReportStatus {
   inProgress, // Status awal saat laporan dibuat (Diajukan)
-  approved,   // Laporan disetujui oleh admin
-  rejected;   // Laporan ditolak oleh admin
+  approved, // Laporan disetujui oleh admin
+  rejected; // Laporan ditolak oleh admin
 
   String get displayName {
     switch (this) {

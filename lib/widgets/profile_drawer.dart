@@ -252,10 +252,7 @@ class ProfileDrawer extends StatelessWidget {
     Color? iconColor,
   }) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: iconColor ?? AppColors.textPrimary,
-      ),
+      leading: Icon(icon, color: iconColor ?? AppColors.textPrimary),
       title: Text(
         title,
         style: AppTextStyles.body.copyWith(
@@ -264,13 +261,8 @@ class ProfileDrawer extends StatelessWidget {
         ),
       ),
       onTap: onTap,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 4,
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
     );
   }
 
@@ -295,10 +287,7 @@ class ProfileDrawer extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
-          'Keluar',
-          style: AppTextStyles.h3,
-        ),
+        title: Text('Keluar', style: AppTextStyles.h3),
         content: Text(
           'Apakah Anda yakin ingin keluar?',
           style: AppTextStyles.body,
@@ -318,18 +307,11 @@ class ProfileDrawer extends StatelessWidget {
               authProvider.logout();
               Navigator.pop(context);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
-            child: Text(
-              'Keluar',
-              style: AppTextStyles.button,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text('Keluar', style: AppTextStyles.button),
           ),
         ],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
