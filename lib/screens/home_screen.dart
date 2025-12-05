@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         activeColorSecondary: AppColors.primary,
         inactiveColorPrimary: Colors.grey.shade500,
         inactiveColorSecondary: Colors.grey.shade500,
-        textStyle: GoogleFonts.poppins(
+        textStyle: GoogleFonts.plusJakartaSans(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.2,
@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
         activeColorSecondary: AppColors.primary,
         inactiveColorPrimary: Colors.grey.shade500,
         inactiveColorSecondary: Colors.grey.shade500,
-        textStyle: GoogleFonts.poppins(
+        textStyle: GoogleFonts.plusJakartaSans(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.2,
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
         activeColorSecondary: AppColors.primary,
         inactiveColorPrimary: Colors.grey.shade500,
         inactiveColorSecondary: Colors.grey.shade500,
-        textStyle: GoogleFonts.poppins(
+        textStyle: GoogleFonts.plusJakartaSans(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.2,
@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 label: Text(
                   'Tambah Laporan',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
@@ -308,7 +308,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     Text(
                       'LaporJTI',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
                         color: AppColors.white,
@@ -324,7 +324,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     Text(
                       'Sistem Pelaporan',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                         color: AppColors.white.withOpacity(0.95),
@@ -433,7 +433,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     Text(
                       'Selamat Datang! 👋',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
@@ -442,7 +442,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     const SizedBox(height: 4),
                     Text(
                       user?.name ?? 'User',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -501,7 +501,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           const SizedBox(width: 8),
                           Text(
                             user?.role.displayName ?? 'User',
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 14,
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
@@ -581,7 +581,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               children: [
                                 Text(
                                   'Admin Dashboard',
-                                  style: GoogleFonts.poppins(
+                                  style: GoogleFonts.plusJakartaSans(
                                     fontSize: 20,
                                     color: AppColors.white,
                                     fontWeight: FontWeight.bold,
@@ -591,7 +591,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 const SizedBox(height: 6),
                                 Text(
                                   'Kelola dan approve laporan masuk',
-                                  style: GoogleFonts.poppins(
+                                  style: GoogleFonts.plusJakartaSans(
                                     fontSize: 14,
                                     color: AppColors.white.withOpacity(0.95),
                                     fontWeight: FontWeight.w500,
@@ -628,7 +628,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     Text(
                       'Statistik Laporan',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -650,7 +650,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           const SizedBox(width: 4),
                           Text(
                             'Live',
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: AppColors.success,
@@ -714,7 +714,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       children: [
                         Text(
                           'Laporan Terbaru',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -723,7 +723,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         const SizedBox(height: 4),
                         Text(
                           'Update terkini dari sistem',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
                             color: AppColors.textSecondary,
                           ),
@@ -742,7 +742,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                       label: Text(
                         'Lihat Semua',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -854,7 +854,7 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(width: 6),
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                 color: isSelected ? AppColors.white : chipColor,
@@ -921,7 +921,7 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 8),
             Text(
               value,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: color,
@@ -931,7 +931,7 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 2),
             Text(
               title,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -1024,7 +1024,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       children: [
                         Text(
                           report.title,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -1035,7 +1035,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         const SizedBox(height: 6),
                         Text(
                           report.description,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
                             color: AppColors.textSecondary,
                           ),
@@ -1060,7 +1060,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               child: Text(
                                 report.status.displayName,
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                   color: AppColors.white,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
@@ -1086,7 +1086,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   const SizedBox(width: 4),
                                   Text(
                                     report.priority.displayName,
-                                    style: GoogleFonts.poppins(
+                                    style: GoogleFonts.plusJakartaSans(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.textSecondary,
@@ -1138,7 +1138,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               const SizedBox(width: 12),
                               Text(
                                 'Edit Laporan',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -1154,7 +1154,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               const SizedBox(width: 12),
                               Text(
                                 'Hapus Laporan',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontWeight: FontWeight.w500,
                                   color: AppColors.error,
                                 ),
@@ -1193,7 +1193,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       const SizedBox(width: 6),
                       Text(
                         'Anda dapat mengedit atau menghapus laporan ini',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                           fontSize: 10,
                           color: AppColors.warning,
                           fontWeight: FontWeight.w500,
@@ -1238,7 +1238,7 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             Text(
               'Apakah Anda yakin ingin menghapus laporan ini?',
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
             ),
             const SizedBox(height: 12),
             Container(
@@ -1255,7 +1255,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   Expanded(
                     child: Text(
                       report.title,
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -1269,7 +1269,7 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 8),
             Text(
               'Tindakan ini tidak dapat dibatalkan!',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
                 color: AppColors.error,
                 fontWeight: FontWeight.w500,
@@ -1282,7 +1282,7 @@ class _DashboardPageState extends State<DashboardPage> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Batal',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w500),
             ),
           ),
           ElevatedButton(
@@ -1312,7 +1312,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             child: Text(
               'Hapus',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -1341,7 +1341,7 @@ class _DashboardPageState extends State<DashboardPage> {
           const SizedBox(height: 24),
           Text(
             'Belum ada laporan',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -1350,7 +1350,7 @@ class _DashboardPageState extends State<DashboardPage> {
           const SizedBox(height: 8),
           Text(
             'Buat laporan pertama Anda sekarang!',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),
