@@ -781,7 +781,7 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
                       children: [
                         Text(
                           report.title,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
@@ -963,7 +963,7 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
           children: [
             Text(
               'Apakah Anda yakin ingin menyetujui laporan ini?',
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
             ),
             const SizedBox(height: 16),
             Container(
@@ -982,7 +982,7 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
                   Expanded(
                     child: Text(
                       report.title,
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -1055,7 +1055,7 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
           children: [
             Text(
               'Berikan alasan penolakan laporan ini:',
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
             ),
             const SizedBox(height: 16),
             Container(
@@ -1077,7 +1077,7 @@ class _AdminReportsTabState extends State<AdminReportsTab> {
                   Expanded(
                     child: Text(
                       report.title,
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
