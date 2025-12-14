@@ -8,6 +8,8 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+import org.gradle.api.tasks.compile.JavaCompile
+
 android {
     namespace = "com.example.laporin"
     compileSdk = flutter.compileSdkVersion
@@ -20,6 +22,11 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    // Suppress Java deprecation warnings
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.addAll(listOf("-Xlint:-deprecation", "-Xlint:-options"))
     }
 
     defaultConfig {

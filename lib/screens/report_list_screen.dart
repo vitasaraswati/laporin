@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:laporin/constants/colors.dart';
 import 'package:laporin/constants/text_styles.dart';
 import 'package:laporin/providers/report_provider.dart';
+import 'package:laporin/providers/auth_provider.dart';
 import 'package:laporin/models/enums.dart';
 import 'package:laporin/models/report_model.dart';
 import 'package:laporin/screens/report_detail_screen.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 
 class ReportListScreen extends StatefulWidget {
   const ReportListScreen({super.key});
@@ -17,14 +19,15 @@ class ReportListScreen extends StatefulWidget {
   State<ReportListScreen> createState() => _ReportListScreenState();
 }
 
-class _ReportListScreenState extends State<ReportListScreen> {
+class _ReportListScreenState extends State<ReportListScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
-  ReportStatus? _filterStatus;
-  ReportCategory? _filterCategory;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 4, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ReportProvider>().fetchReports();
     });
@@ -33,321 +36,156 @@ class _ReportListScreenState extends State<ReportListScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _tabController.dispose();
     super.dispose();
-  }
-
-  void _showFilterDialog() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Filter Laporan', style: AppTextStyles.h3),
-                      TextButton(
-                        onPressed: () {
-                          setModalState(() {
-                            _filterStatus = null;
-                            _filterCategory = null;
-                          });
-                          setState(() {
-                            _filterStatus = null;
-                            _filterCategory = null;
-                          });
-                          context.read<ReportProvider>().clearFilters();
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Reset'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Status Filter
-                  Text('Status', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _buildFilterChip(
-                        label: 'Semua',
-                        isSelected: _filterStatus == null,
-                        onTap: () {
-                          setModalState(() => _filterStatus = null);
-                        },
-                      ),
-                      ...ReportStatus.values.map((status) {
-                        return _buildFilterChip(
-                          label: status.displayName,
-                          isSelected: _filterStatus == status,
-                          color: _getStatusColor(status),
-                          onTap: () {
-                            setModalState(() => _filterStatus = status);
-                          },
-                        );
-                      }),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Category Filter
-                  Text('Kategori', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _buildFilterChip(
-                        label: 'Semua',
-                        isSelected: _filterCategory == null,
-                        onTap: () {
-                          setModalState(() => _filterCategory = null);
-                        },
-                      ),
-                      ...ReportCategory.values.map((category) {
-                        return _buildFilterChip(
-                          label: '${category.icon} ${category.displayName}',
-                          isSelected: _filterCategory == category,
-                          onTap: () {
-                            setModalState(() => _filterCategory = category);
-                          },
-                        );
-                      }),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Apply Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {});
-                        final provider = context.read<ReportProvider>();
-                        provider.setStatusFilter(_filterStatus);
-                        provider.setCategoryFilter(_filterCategory);
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Terapkan Filter'),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildFilterChip({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-    Color? color,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (color ?? AppColors.primary).withValues(alpha: 0.2)
-              : AppColors.background,
-          border: Border.all(
-            color: isSelected ? (color ?? AppColors.primary) : AppColors.greyLight,
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: AppTextStyles.bodySmall.copyWith(
-            color: isSelected ? (color ?? AppColors.primary) : AppColors.textSecondary,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final reportProvider = Provider.of<ReportProvider>(context);
+    final user = authProvider.currentUser;
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Get user's reports
+    final allUserReports = reportProvider.getReportsByUser(user.id);
+    
+    // Separate reports by status
+    final diajukanReports = allUserReports
+        .where((r) => r.status == ReportStatus.inProgress)
+        .toList();
+    final disetujuiReports = allUserReports
+        .where((r) => r.status == ReportStatus.approved)
+        .toList();
+    final ditolakReports = allUserReports
+        .where((r) => r.status == ReportStatus.rejected)
+        .toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Semua Laporan',
-          style: AppTextStyles.h3.copyWith(color: AppColors.white),
-        ),
-        actions: [
-          IconButton(
-            icon: badges.Badge(
-              showBadge: _filterStatus != null || _filterCategory != null,
-              badgeStyle: const badges.BadgeStyle(
-                badgeColor: AppColors.error,
-                padding: EdgeInsets.all(4),
-              ),
-              child: const Icon(Icons.filter_list),
-            ),
-            onPressed: _showFilterDialog,
+        title: const Text('Laporan Saya'),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Search Bar
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: AppColors.white,
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Cari laporan...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          context.read<ReportProvider>().setSearchQuery(null);
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: AppColors.background,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-              onChanged: (value) {
-                setState(() {});
-                context.read<ReportProvider>().setSearchQuery(value.isEmpty ? null : value);
-              },
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 13,
+          ),
+          tabs: [
+            Tab(
+              text: 'Semua (${allUserReports.length})',
+              icon: const Icon(Icons.list_alt, size: 20),
             ),
-          ).animate().fadeIn(duration: 300.ms),
+            Tab(
+              text: 'Diajukan (${diajukanReports.length})',
+              icon: const Icon(Icons.pending_outlined, size: 20),
+            ),
+            Tab(
+              text: 'Disetujui (${disetujuiReports.length})',
+              icon: const Icon(Icons.check_circle_outline, size: 20),
+            ),
+            Tab(
+              text: 'Ditolak (${ditolakReports.length})',
+              icon: const Icon(Icons.cancel_outlined, size: 20),
+            ),
+          ],
+        ),
+      ),
+      body: reportProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildReportList(allUserReports, null),
+                _buildReportList(diajukanReports, ReportStatus.inProgress),
+                _buildReportList(disetujuiReports, ReportStatus.approved),
+                _buildReportList(ditolakReports, ReportStatus.rejected),
+              ],
+            ),
+    );
+  }
 
-          // Active Filters
-          if (_filterStatus != null || _filterCategory != null)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: AppColors.background,
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  if (_filterStatus != null)
-                    Chip(
-                      label: Text(_filterStatus!.displayName),
-                      backgroundColor: _getStatusColor(_filterStatus!).withValues(alpha: 0.2),
-                      deleteIcon: const Icon(Icons.close, size: 18),
-                      onDeleted: () {
-                        setState(() => _filterStatus = null);
-                        context.read<ReportProvider>().setStatusFilter(null);
-                      },
-                    ),
-                  if (_filterCategory != null)
-                    Chip(
-                      label: Text('${_filterCategory!.icon} ${_filterCategory!.displayName}'),
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.2),
-                      deleteIcon: const Icon(Icons.close, size: 18),
-                      onDeleted: () {
-                        setState(() => _filterCategory = null);
-                        context.read<ReportProvider>().setCategoryFilter(null);
-                      },
-                    ),
-                ],
-              ),
-            ).animate().fadeIn(duration: 300.ms),
+  Widget _buildReportList(List<Report> reports, ReportStatus? status) {
+    if (reports.isEmpty) {
+      return _buildEmptyState(status);
+    }
 
-          // Report List
-          Expanded(
-            child: Consumer<ReportProvider>(
-              builder: (context, reportProvider, _) {
-                if (reportProvider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+    return RefreshIndicator(
+      onRefresh: () async {
+        final reportProvider = Provider.of<ReportProvider>(context, listen: false);
+        await reportProvider.fetchReports();
+      },
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: reports.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final report = reports[index];
+          return _buildSimpleReportCard(report);
+        },
+      ),
+    );
+  }
 
-                if (reportProvider.errorMessage != null) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: AppColors.error,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          reportProvider.errorMessage!,
-                          style: AppTextStyles.body.copyWith(color: AppColors.error),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () => reportProvider.fetchReports(),
-                          child: const Text('Coba Lagi'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+  Widget _buildEmptyState(ReportStatus? status) {
+    String message;
+    IconData icon;
 
-                final reports = reportProvider.reports;
+    if (status == null) {
+      message = 'Belum ada laporan';
+      icon = Icons.list_alt;
+    } else {
+      switch (status) {
+        case ReportStatus.inProgress:
+          message = 'Tidak ada laporan yang diajukan';
+          icon = Icons.pending_outlined;
+          break;
+        case ReportStatus.approved:
+          message = 'Tidak ada laporan yang disetujui';
+          icon = Icons.check_circle_outline;
+          break;
+        case ReportStatus.rejected:
+          message = 'Tidak ada laporan yang ditolak';
+          icon = Icons.cancel_outlined;
+          break;
+      }
+    }
 
-                if (reports.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.assignment_outlined,
-                          size: 80,
-                          color: AppColors.greyLight,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Tidak ada laporan',
-                          style: AppTextStyles.h3.copyWith(color: AppColors.textSecondary),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _filterStatus != null || _filterCategory != null
-                              ? 'Coba ubah filter'
-                              : 'Belum ada laporan yang dibuat',
-                          style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return RefreshIndicator(
-                  onRefresh: () => reportProvider.fetchReports(),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: reports.length,
-                    itemBuilder: (context, index) {
-                      final report = reports[index];
-                      return _buildReportCard(report, index);
-                    },
-                  ),
-                );
-              },
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 100,
+            color: AppColors.greyLight,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: AppTextStyles.h3.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Laporan yang Anda buat akan muncul di sini',
+            style: AppTextStyles.body.copyWith(
+              color: AppColors.textSecondary,
             ),
           ),
         ],
@@ -355,235 +193,134 @@ class _ReportListScreenState extends State<ReportListScreen> {
     );
   }
 
-  Widget _buildReportCard(Report report, int index) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ReportDetailScreen(reportId: report.id),
+  // Simplified card: only title, status, and category
+  Widget _buildSimpleReportCard(Report report) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReportDetailScreen(reportId: report.id),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.greyLight),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header: Category Icon + Status Badge
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title and Status Badge
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    report.title,
+                    style: AppTextStyles.h4.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
                     ),
-                    child: Center(
-                      child: Text(
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                _buildStatusBadge(report.status),
+              ],
+            ),
+            const SizedBox(height: 12),
+            
+            // Category
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: report.category.color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: report.category.color.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
                         report.category.emoji,
-                        style: const TextStyle(fontSize: 24),
+                        style: const TextStyle(fontSize: 16),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          report.category.displayName,
-                          style: AppTextStyles.caption.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          report.title,
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  badges.Badge(
-                    badgeContent: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Text(
-                        report.status.displayName,
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.white,
-                          fontSize: 10,
+                      const SizedBox(width: 6),
+                      Text(
+                        report.category.displayName,
+                        style: AppTextStyles.body.copyWith(
+                          color: report.category.color,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    badgeStyle: badges.BadgeStyle(
-                      badgeColor: _getStatusColor(report.status),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Description
-              Text(
-                report.description,
-                style: AppTextStyles.body,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 12),
-
-              // Footer: Reporter + Date + Priority
-              Row(
-                children: [
-                  // Reporter
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: AppColors.primary,
-                    child: Text(
-                      report.reporter.name[0].toUpperCase(),
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.white,
-                        fontSize: 10,
-                      ),
-                    ),
+                ),
+                const Spacer(),
+                // Date
+                Text(
+                  DateFormat('dd MMM yyyy').format(report.createdAt),
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      report.reporter.name,
-                      style: AppTextStyles.caption,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  
-                  // Priority Badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _getPriorityColor(report.priority).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      report.priority.displayName,
-                      style: AppTextStyles.caption.copyWith(
-                        color: _getPriorityColor(report.priority),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  
-                  // Date
-                  Text(
-                    _formatDate(report.createdAt),
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-
-              // Location (if available)
-              if (report.location != null) ...[
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 14, color: AppColors.textSecondary),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        report.location!.displayText,
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
                 ),
               ],
-
-              // Media count (if available)
-              if (report.media.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(Icons.image, size: 14, color: AppColors.textSecondary),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${report.media.length} lampiran',
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    ).animate(delay: (index * 50).ms).fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
+    );
   }
 
-  Color _getStatusColor(ReportStatus status) {
-    switch (status) {
-      case ReportStatus.inProgress:
-        return AppColors.info;
-      case ReportStatus.approved:
-        return AppColors.success;
-      case ReportStatus.rejected:
-        return AppColors.error;
-    }
+  Widget _buildStatusBadge(ReportStatus status) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: status.color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: status.color.withOpacity(0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            status.icon,
+            size: 14,
+            color: status.color,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            status.displayName,
+            style: TextStyle(
+              color: status.color,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Color _getPriorityColor(ReportPriority priority) {
-    switch (priority) {
-      case ReportPriority.low:
-        return AppColors.success;
-      case ReportPriority.medium:
-        return AppColors.info;
-      case ReportPriority.high:
-        return AppColors.warning;
-      case ReportPriority.urgent:
-        return AppColors.error;
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        if (difference.inMinutes == 0) {
-          return 'Baru saja';
-        }
-        return '${difference.inMinutes}m lalu';
-      }
-      return '${difference.inHours}j lalu';
-    } else if (difference.inDays == 1) {
-      return 'Kemarin';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}h lalu';
-    } else {
-      return DateFormat('dd MMM yyyy').format(date);
-    }
-  }
 }
